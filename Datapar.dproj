@@ -110,6 +110,32 @@
             <Form>FormPrincipal</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="Views\View.Home.pas">
+            <Form>FormHome</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="Views\View.SimularFinanciamento.pas">
+            <Form>FormSimularFinanciamento</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="Controllers\Controller.Financiamento.Interfaces.pas"/>
+        <DCCReference Include="Controllers\Controller.Financiamento.pas"/>
+        <DCCReference Include="Models\Model.Financiamento.Interfaces.pas"/>
+        <DCCReference Include="Models\Model.Financiamento.pas"/>
+        <DCCReference Include="Models\Model.Financiamento.Factory.Interfaces.pas"/>
+        <DCCReference Include="Models\Model.Financiamento.Factory.pas"/>
+        <DCCReference Include="Controllers\Controller.Financiamento.Factory.Interfaces.pas"/>
+        <DCCReference Include="Controllers\Controller.Financiamento.Factory.pas"/>
+        <DCCReference Include="Models\Entities\Entity.Model.Simulacao.pas"/>
+        <DCCReference Include="Models\Model.Financiamento.Simular.pas"/>
+        <DCCReference Include="Views\View.Base.pas">
+            <Form>FormBase</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="Models\Model.Financiamento.Validar.Capital.pas"/>
+        <DCCReference Include="Models\Model.Financiamento.Validar.TaxaJuros.pas"/>
+        <DCCReference Include="Models\Model.Financiamento.Validar.MesesPagamento.pas"/>
+        <DCCReference Include="Models\Model.Financiamento.Validacao.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -136,7 +162,7 @@
                 </Excluded_Packages>
             </Delphi.Personality>
             <Deployment Version="3">
-                <DeployFile LocalName="Win32\Debug\Datapar.exe" Configuration="Debug" Class="ProjectOutput">
+                <DeployFile LocalName="BIN\Datapar.exe" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>Datapar.exe</RemoteName>
                         <Overwrite>true</Overwrite>

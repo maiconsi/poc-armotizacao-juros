@@ -2,32 +2,30 @@ object FormPrincipal: TFormPrincipal
   Left = 0
   Top = 0
   Caption = 'App Delphi'
-  ClientHeight = 509
-  ClientWidth = 802
+  ClientHeight = 558
+  ClientWidth = 884
   Color = clBtnFace
-  Font.Charset = DEFAULT_CHARSET
+  Font.Charset = ANSI_CHARSET
   Font.Color = clWindowText
-  Font.Height = -11
-  Font.Name = 'Tahoma'
+  Font.Height = -13
+  Font.Name = 'Segoe UI'
   Font.Style = []
   OldCreateOrder = False
   Position = poOwnerFormCenter
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   PixelsPerInch = 96
-  TextHeight = 13
+  TextHeight = 17
   object pnlBarraFerramentas: TPanel
     Left = 0
     Top = 0
-    Width = 802
+    Width = 884
     Height = 50
     Align = alTop
     BevelOuter = bvNone
     Color = 12477460
     ParentBackground = False
     TabOrder = 0
-    ExplicitLeft = -28
-    ExplicitWidth = 784
     object imgMenu: TImage
       Left = 10
       Top = 10
@@ -63,22 +61,20 @@ object FormPrincipal: TFormPrincipal
     Left = 0
     Top = 50
     Width = 200
-    Height = 459
+    Height = 508
     CloseStyle = svcCompact
     Color = clBlack
     OpenedWidth = 200
     Placement = svpLeft
     TabOrder = 1
-    ExplicitTop = -55
-    ExplicitHeight = 492
     DesignSize = (
       200
-      459)
+      508)
     object catMenuItems: TCategoryButtons
       Left = -2
       Top = -22
       Width = 204
-      Height = 479
+      Height = 528
       Anchors = [akLeft, akTop, akRight, akBottom]
       BorderStyle = bsNone
       ButtonFlow = cbfVertical
@@ -113,10 +109,14 @@ object FormPrincipal: TFormPrincipal
   object pgcListaPaginas: TPageControl
     Left = 200
     Top = 50
-    Width = 602
-    Height = 459
+    Width = 684
+    Height = 508
     Align = alClient
+    MultiLine = True
+    PopupMenu = PopupMenu
+    ScrollOpposite = True
     TabOrder = 2
+    OnChange = pgcListaPaginasChange
   end
   object Image32: TImageList
     ColorDepth = cd32Bit
@@ -1194,14 +1194,49 @@ object FormPrincipal: TFormPrincipal
     Top = 154
     StyleName = 'Standard'
     object AcHome: TAction
+      Category = 'Menus'
       Caption = '  Home'
       Hint = 'Home'
       ImageIndex = 0
+      OnExecute = AcHomeExecute
     end
     object AcSimularFinanciamento: TAction
+      Category = 'Menus'
       Caption = '  Simular Financiamento'
       Hint = 'Simular Financiamento'
       ImageIndex = 2
+      OnExecute = AcSimularFinanciamentoExecute
+    end
+    object AcFecharPaginaAtual: TAction
+      Category = 'PopUpPaginas'
+      Caption = 'Fechar p'#225'gina atual'
+      OnExecute = AcFecharPaginaAtualExecute
+    end
+    object AcFecharTodasPaginas: TAction
+      Category = 'PopUpPaginas'
+      Caption = 'Fechar todas '#224's p'#225'ginas'
+      OnExecute = AcFecharTodasPaginasExecute
+    end
+    object AcAbrirPaginaJanela: TAction
+      Category = 'PopUpPaginas'
+      Caption = 'Abrir p'#225'gina em janela'
+      OnExecute = AcAbrirPaginaJanelaExecute
+    end
+  end
+  object PopupMenu: TPopupMenu
+    Left = 656
+    Top = 216
+    object menuFechar: TMenuItem
+      Action = AcFecharPaginaAtual
+    end
+    object menuFecharTodasExcetoEssa: TMenuItem
+      Action = AcFecharTodasPaginas
+    end
+    object N2: TMenuItem
+      Caption = '-'
+    end
+    object menuSepararAba: TMenuItem
+      Action = AcAbrirPaginaJanela
     end
   end
 end

@@ -7,10 +7,11 @@ uses
   System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
   System.ImageList, Vcl.ImgList,Vcl.CategoryButtons, Vcl.WinXCtrls,
   Vcl.StdCtrls, Vcl.Imaging.pngimage, Vcl.ExtCtrls, System.Actions,
-  Vcl.ActnList, Vcl.ActnMan, Vcl.StdStyleActnCtrls, Vcl.ComCtrls;
+  Vcl.ActnList, Vcl.ActnMan, Vcl.StdStyleActnCtrls, Vcl.ComCtrls,
+  Vcl.Menus, View.Base;
 
 type
-  TFormPrincipal = class(TForm)
+  TFormPrincipal = class(TFormBase)
     pnlBarraFerramentas: TPanel;
     imgMenu: TImage;
     lblTitulo: TLabel;
@@ -21,9 +22,23 @@ type
     AcHome: TAction;
     AcSimularFinanciamento: TAction;
     pgcListaPaginas: TPageControl;
+    PopupMenu: TPopupMenu;
+    menuFechar: TMenuItem;
+    menuFecharTodasExcetoEssa: TMenuItem;
+    N2: TMenuItem;
+    menuSepararAba: TMenuItem;
+    AcFecharPaginaAtual: TAction;
+    AcFecharTodasPaginas: TAction;
+    AcAbrirPaginaJanela: TAction;
     procedure imgMenuClick(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormCreate(Sender: TObject);
+    procedure AcHomeExecute(Sender: TObject);
+    procedure AcSimularFinanciamentoExecute(Sender: TObject);
+    procedure AcAbrirPaginaJanelaExecute(Sender: TObject);
+    procedure AcFecharPaginaAtualExecute(Sender: TObject);
+    procedure AcFecharTodasPaginasExecute(Sender: TObject);
+    procedure pgcListaPaginasChange(Sender: TObject);
   private
     { Private declarations }
     FNomeFormAtivo: String;
@@ -47,6 +62,10 @@ var
 
 implementation
 
+uses
+  View.Home,
+  View.SimularFinanciamento;
+
 {$R *.dfm}
 
 //Destruo o form e fecho a ABA
@@ -54,11 +73,13 @@ function TFormPrincipal.FecharPagina(APagina: TTabSheet;
   AFreePagina: Boolean): Boolean;
 var
   LForm: TForm;
+  AClasseForm: TFormClass;
   LNovaPaginaAtiva: TTabSheet;
 begin
   LNovaPaginaAtiva := nil;
   Try
     LForm := (APagina.Components[0] as TForm);
+    AClasseForm :=  TFormClass(LForm.ClassType);
 
     Result := LForm.CloseQuery;
   Except
@@ -82,22 +103,51 @@ begin
     LForm :=  Nil;
 
     //--Para resolver o problema quando o usuario clica no botão X da aba
-//    if AFreePagina then
-//      APagina.Free;
+    if AFreePagina then
+      APagina.Free;
+
+    //Ajusta o título (caption) das abas
+    AjustarCaptionAbas(AClasseForm);
 
     //--Seto a nova APagina a tiva
     pgcListaPaginas.ActivePage  := LNovaPaginaAtiva;
+    pgcListaPaginas.OnChange(Self);
 
     //--Ajusto o Caption do FormPrincipal caso não existe nenuma aba ativa
     if LNovaPaginaAtiva = nil then
     begin
-      Caption := 'Integr@Pec';
+      Caption := 'App Delphi';
       Application.Title := Caption
     end;
   end;
 end;
 
 //Ajusta o caption da aba com novo indice
+procedure TFormPrincipal.AcAbrirPaginaJanelaExecute(Sender: TObject);
+begin
+  SepararAba(pgcListaPaginas.ActivePage);
+end;
+
+procedure TFormPrincipal.AcFecharPaginaAtualExecute(Sender: TObject);
+begin
+  FecharPagina(pgcListaPaginas.ActivePage, True);
+end;
+
+procedure TFormPrincipal.AcFecharTodasPaginasExecute(Sender: TObject);
+begin
+  FecharTodasPaginas;
+end;
+
+procedure TFormPrincipal.AcHomeExecute(Sender: TObject);
+begin
+  NovaPagina(TFormHome);
+end;
+
+procedure TFormPrincipal.AcSimularFinanciamentoExecute(Sender: TObject);
+begin
+  NovaPagina(TFormSimularFinanciamento);
+end;
+
 procedure TFormPrincipal.AjustarCaptionAbas(AClasseForm: TFormClass);
 var
   I: Integer;
@@ -191,9 +241,10 @@ begin
   LForm := AClasseForm.Create(LPagina);
 
   //Propriedades do LForm
-  LForm.Align       := alClient;
-  LForm.BorderStyle := bsNone;
-  LForm.Parent      := LPagina;
+  LForm.Align       :=  alClient;
+  LForm.BorderStyle :=  bsNone;
+  LForm.BorderIcons :=  [biSystemMenu];
+  LForm.Parent      :=  LPagina;
 
   //Propriedades da Aba
   LPagina.Caption   := LForm.Caption;
@@ -202,17 +253,33 @@ begin
   //Ajusta o título (caption) das abas
   AjustarCaptionAbas(AClasseForm);
 
-  //ativa a página
+  //Ativa a página
   pgcListaPaginas.ActivePage := LPagina;
 
   FNomeFormAtivo :=  LForm.Name;
 
-  //--Ajusto o Caption do FormPrincipal
+  //Ajusto o Caption do FormPrincipal
   Caption := LPagina.Caption;
   Application.Title := Caption;
 
-  //exibe o formulário
+  //Exibe o formulário
   LForm.Show;
+end;
+
+procedure TFormPrincipal.pgcListaPaginasChange(Sender: TObject);
+begin
+  if pgcListaPaginas.ActivePage.Caption <> '' then
+  begin
+    Caption := pgcListaPaginas.ActivePage.Caption;
+    Application.Title := Caption;
+
+    with (pgcListaPaginas.ActivePage.Components[0] as TForm) do
+    begin
+      NomeFormAtivo :=  Name;
+      if not Assigned(Parent) then
+        Show;
+    end;
+  end;
 end;
 
 function TFormPrincipal.PodeAbrirFormulario(AClasseForm: TFormClass;
@@ -243,9 +310,7 @@ begin
   begin
     Align       := alNone;
     BorderStyle := bsSizeable;
-//    Left := (((pgcListaPaginas.Width )- Width) div 2)+pgcListaPaginas.Left;
-//    Top := (((pgcListaPaginas.ClientHeight)-Height) div 2 )+(pgcListaPaginas.Top)-18;
-    Parent      := nil;
+    Parent      := Self;
   end;
 
   //Tratamento para esconter a aba do pagecontrol
@@ -255,6 +320,7 @@ begin
   APagina.TabVisible :=  False;
 
   pgcListaPaginas.ActivePage := LPaginaEsquerda;
+  pgcListaPaginas.OnChange(Self);
 end;
 
 //Verifica o total de abas abertas para o formulario passado como parâmetro
@@ -273,6 +339,8 @@ end;
 procedure TFormPrincipal.FormCreate(Sender: TObject);
 begin
   FNomeFormAtivo := '';
+
+  AcHome.Execute;
 end;
 
 end.
